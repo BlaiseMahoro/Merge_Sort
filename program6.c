@@ -2,9 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define NUM 20
+#define NUM 23
 int sum; /* this data is shared by the thread(s) */
-int arr[NUM] = {7, 11,19,20,4, 3, 2, 5, 6, 8, 25, 31, 15, 4, 9, 1, 10, 78, 23,1000};
+int arr[NUM] = {7, 11,19,2000,20,4, 3, 2, 5, 6, 8, 25, 31, 15, 4, 9, 1, 10, 78, 23,-2,90,1000};
 struct parameters
 {
     int start; //start row
@@ -12,8 +12,7 @@ struct parameters
 };
 void *merge_sort(struct parameters *params)
 {
-    printf("start=%d\n", params->start);
-    printf("end=%d\n", params->end);
+   
     for (int i = params->end-1; i >= params->start; i--)
     {
         for (int j = params->start+1; j <= i; j++)
@@ -44,9 +43,13 @@ int main(int argc, char *argv[])
     pthread_create(&tid_arr[0], &attr_arr[0], merge_sort, &params);
     pthread_join(tid_arr[0], NULL);
     //printf("end =%d", params.end);
+    printf("Sorting thread 1:\n");
+    printf("start=%d\n", params.start);
+    printf("end=%d\n", params.end);
      for(int i=params.start;i<params.end;i++){
         printf("%d, ", arr[i]);
     }
+    printf("\n********************************************\n");
     //First mergeSort
     params.start = (NUM / 2);
     params.end = NUM;
@@ -54,7 +57,13 @@ int main(int argc, char *argv[])
     pthread_create(&tid_arr[1], &attr_arr[1], merge_sort, &params);
     pthread_join(tid_arr[1], NULL);
     //printf("start=%d, ", arr[params.start]);
-   
+    printf("Sorting thread 2:\n");
+    printf("start=%d\n", params.start);
+    printf("end=%d\n", params.end);
+     for(int i=params.start;i<params.end;i++){
+        printf("%d, ", arr[i]);
+    }
+    printf("\n********************************************\n");
 
     //Merge
     params.start = 0;
@@ -62,12 +71,19 @@ int main(int argc, char *argv[])
     pthread_attr_init(&attr_arr[2]);
     pthread_create(&tid_arr[2], &attr_arr[2], merge, NULL);
     pthread_join(tid_arr[2], NULL);
-    for(int i=params.start;i<params.end;i++){
+    printf("Merging thread:\n");
+    printf("start=%d\n", params.start);
+    printf("end=%d\n", params.end);
+    //displays fully sorted list
+     for(int i=params.start;i<params.end;i++){
         printf("%d, ", arr[i]);
     }
+    printf("\n");
+    
+
     return 0;
 }
-/* The thread will begin control in this function */
+
 
 void *merge()
 {
@@ -105,7 +121,7 @@ void *merge()
         } 
         k++; 
     } 
-  
+    
     /* Copy the remaining elements of L[], if there 
        are any */
     while (i < n1) 
